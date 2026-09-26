@@ -1,0 +1,15 @@
+target/
+.git/
+.gitignore
+.idea/
+.vscode/
+*.iml
+*.log
+.env
+.env.*
+terraform/
+docs/
+README.md
+mvnw
+mvnw.cmd
+.mvn/
