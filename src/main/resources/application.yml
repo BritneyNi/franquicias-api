@@ -1,0 +1,60 @@
+server:
+  port: ${SERVER_PORT:8080}
+  shutdown: graceful
+
+spring:
+  application:
+    name: franquicias-api
+
+  # ---------------------------------------------------------------------------
+  # Persistencia reactiva (R2DBC).
+  # Por defecto usa H2 en memoria para que el proyecto arranque sin infraestructura.
+  # Con el perfil "mysql" (ver application-mysql.yml) se conecta a MySQL 8.
+  # Todo se puede sobreescribir por variables de entorno, sin tocar el codigo.
+  # ---------------------------------------------------------------------------
+  r2dbc:
+    url: ${R2DBC_URL:r2dbc:h2:mem:///franquicias;DB_CLOSE_DELAY=-1}
+    username: ${R2DBC_USER:sa}
+    password: ${R2DBC_PASSWORD:}
+    pool:
+      enabled: true
+      initial-size: 5
+      max-size: ${R2DBC_POOL_MAX_SIZE:20}
+      max-idle-time: 30m
+
+  sql:
+    init:
+      # "always" crea el esquema si no existe (CREATE TABLE IF NOT EXISTS), por eso es
+      # seguro tanto en H2 como en MySQL. En produccion se puede desactivar con
+      # SQL_INIT_MODE=never y gestionar el esquema con Flyway o Terraform.
+      # Cada motor tiene su DDL porque H2 y MySQL declaran los indices de forma distinta.
+      mode: ${SQL_INIT_MODE:always}
+      schema-locations: classpath:db/schema-h2.sql
+
+  codec:
+    max-in-memory-size: 256KB
+
+  jackson:
+    default-property-inclusion: non_null
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+  health:
+    r2dbc:
+      enabled: true
+
+info:
+  app:
+    name: franquicias-api
+    description: API reactiva para la gestion de franquicias, sucursales y productos
+    version: 1.0.0
+
+logging:
+  level:
+    com.franquicias: INFO

@@ -1,0 +1,25 @@
+# ---------------------------------------------------------------------------
+# Perfil "mysql": persistencia real en MySQL 8.
+#
+#   docker compose up -d          (levanta MySQL y la API ya conectada)
+#
+# O de forma local:
+#   mvn spring-boot:run -Dspring-boot.run.profiles=mysql
+# ---------------------------------------------------------------------------
+spring:
+  r2dbc:
+    url: ${R2DBC_URL:r2dbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:franquicias}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8}
+    username: ${R2DBC_USER:${MYSQL_USER:franquicias}}
+    password: ${R2DBC_PASSWORD:${MYSQL_PASSWORD:franquicias}}
+    pool:
+      enabled: true
+      initial-size: 5
+      max-size: ${R2DBC_POOL_MAX_SIZE:20}
+      max-idle-time: 30m
+      validation-query: SELECT 1
+
+  sql:
+    init:
+      mode: ${SQL_INIT_MODE:always}
+      # MySQL no acepta "CREATE INDEX IF NOT EXISTS", por eso usa su propio DDL.
+      schema-locations: classpath:db/schema-mysql.sql
