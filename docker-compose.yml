@@ -1,0 +1,51 @@
+services:
+
+  mysql:
+    image: mysql:8.4
+    container_name: franquicias-mysql
+    environment:
+      MYSQL_DATABASE: franquicias
+      MYSQL_USER: franquicias
+      MYSQL_PASSWORD: franquicias
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-ufranquicias", "-pfranquicias"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+    networks:
+      - franquicias-net
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: franquicias-api
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: mysql
+      MYSQL_HOST: mysql
+      MYSQL_PORT: 3306
+      MYSQL_DATABASE: franquicias
+      MYSQL_USER: franquicias
+      MYSQL_PASSWORD: franquicias
+      SQL_INIT_MODE: always
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    networks:
+      - franquicias-net
+
+volumes:
+  mysql-data:
+
+networks:
+  franquicias-net:
+    driver: bridge
