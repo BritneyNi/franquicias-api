@@ -1,0 +1,212 @@
+{
+  "info": {
+    "name": "franquicias-api",
+    "description": "API reactiva para la gestion de franquicias, sucursales y productos.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "franquiciaId", "value": "" },
+    { "key": "sucursalId", "value": "" },
+    { "key": "productoId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Salud",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": { "raw": "{{baseUrl}}/actuator/health", "host": ["{{baseUrl}}"], "path": ["actuator", "health"] }
+      }
+    },
+    {
+      "name": "Franquicias",
+      "item": [
+        {
+          "name": "Crear franquicia",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 Created', () => pm.response.to.have.status(201));",
+                  "const body = pm.response.json();",
+                  "pm.collectionVariables.set('franquiciaId', body.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n    \"nombre\": \"Krispy Kreme\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/franquicias", "host": ["{{baseUrl}}"], "path": ["api", "franquicias"] }
+          }
+        },
+        {
+          "name": "Crear franquicia (duplicada -> 409)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n    \"nombre\": \"krispy kreme\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/franquicias", "host": ["{{baseUrl}}"], "path": ["api", "franquicias"] }
+          }
+        },
+        {
+          "name": "Listar franquicias",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/franquicias", "host": ["{{baseUrl}}"], "path": ["api", "franquicias"] }
+          }
+        },
+        {
+          "name": "Ver franquicia (detalle con sucursales)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/franquicias/{{franquiciaId}}", "host": ["{{baseUrl}}"], "path": ["api", "franquicias", "{{franquiciaId}}"] }
+          }
+        },
+        {
+          "name": "Renombrar franquicia",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n    \"nombre\": \"Krispy Kreme Premium\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/franquicias/{{franquiciaId}}", "host": ["{{baseUrl}}"], "path": ["api", "franquicias", "{{franquiciaId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Sucursales",
+      "item": [
+        {
+          "name": "Crear sucursal",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 Created', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('sucursalId', pm.response.json().id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n    \"nombre\": \"Centro\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/franquicias/{{franquiciaId}}/sucursales", "host": ["{{baseUrl}}"], "path": ["api", "franquicias", "{{franquiciaId}}", "sucursales"] }
+          }
+        },
+        {
+          "name": "Listar sucursales",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/franquicias/{{franquiciaId}}/sucursales", "host": ["{{baseUrl}}"], "path": ["api", "franquicias", "{{franquiciaId}}", "sucursales"] }
+          }
+        },
+        {
+          "name": "Renombrar sucursal",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n    \"nombre\": \"Centro Historico\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/franquicias/{{franquiciaId}}/sucursales/{{sucursalId}}", "host": ["{{baseUrl}}"], "path": ["api", "franquicias", "{{franquiciaId}}", "sucursales", "{{sucursalId}}"] }
+          }
+        },
+        {
+          "name": "Eliminar sucursal",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/franquicias/{{franquiciaId}}/sucursales/{{sucursalId}}", "host": ["{{baseUrl}}"], "path": ["api", "franquicias", "{{franquiciaId}}", "sucursales", "{{sucursalId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Productos",
+      "item": [
+        {
+          "name": "Crear producto",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 Created', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('productoId', pm.response.json().id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n    \"nombre\": \"Donas glaseadas\",\n    \"stock\": 10\n}" },
+            "url": { "raw": "{{baseUrl}}/api/franquicias/{{franquiciaId}}/sucursales/{{sucursalId}}/productos", "host": ["{{baseUrl}}"], "path": ["api", "franquicias", "{{franquiciaId}}", "sucursales", "{{sucursalId}}", "productos"] }
+          }
+        },
+        {
+          "name": "Listar productos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/franquicias/{{franquiciaId}}/sucursales/{{sucursalId}}/productos", "host": ["{{baseUrl}}"], "path": ["api", "franquicias", "{{franquiciaId}}", "sucursales", "{{sucursalId}}", "productos"] }
+          }
+        },
+        {
+          "name": "Actualizar stock",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n    \"stock\": 99\n}" },
+            "url": { "raw": "{{baseUrl}}/api/franquicias/{{franquiciaId}}/sucursales/{{sucursalId}}/productos/{{productoId}}/stock", "host": ["{{baseUrl}}"], "path": ["api", "franquicias", "{{franquiciaId}}", "sucursales", "{{sucursalId}}", "productos", "{{productoId}}", "stock"] }
+          }
+        },
+        {
+          "name": "Actualizar stock (invalido -> 400)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n    \"stock\": -1\n}" },
+            "url": { "raw": "{{baseUrl}}/api/franquicias/{{franquiciaId}}/sucursales/{{sucursalId}}/productos/{{productoId}}/stock", "host": ["{{baseUrl}}"], "path": ["api", "franquicias", "{{franquiciaId}}", "sucursales", "{{sucursalId}}", "productos", "{{productoId}}", "stock"] }
+          }
+        },
+        {
+          "name": "Renombrar producto",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n    \"nombre\": \"Donas de chocolate\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/franquicias/{{franquiciaId}}/sucursales/{{sucursalId}}/productos/{{productoId}}", "host": ["{{baseUrl}}"], "path": ["api", "franquicias", "{{franquiciaId}}", "sucursales", "{{sucursalId}}", "productos", "{{productoId}}"] }
+          }
+        },
+        {
+          "name": "Producto con mas stock por sucursal",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/franquicias/{{franquiciaId}}/productos-mayor-stock", "host": ["{{baseUrl}}"], "path": ["api", "franquicias", "{{franquiciaId}}", "productos-mayor-stock"] }
+          }
+        },
+        {
+          "name": "Eliminar producto",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/franquicias/{{franquiciaId}}/sucursales/{{sucursalId}}/productos/{{productoId}}", "host": ["{{baseUrl}}"], "path": ["api", "franquicias", "{{franquiciaId}}", "sucursales", "{{sucursalId}}", "productos", "{{productoId}}"] }
+          }
+        }
+      ]
+    }
+  ]
+}
